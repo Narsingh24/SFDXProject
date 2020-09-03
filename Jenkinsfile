@@ -55,7 +55,7 @@ node {
                 }
             }
             stage('Deploy') {
-                rc = command "sfdx force:mdapi:deploy -d mdapi -u ${HUB_ORG}"
+                rc = command "sfdx force:source:push --targetusername ${HUB_ORG}"
                 if (rc != 0) {
                     error 'Salesforce deploy failed.'
                 }
