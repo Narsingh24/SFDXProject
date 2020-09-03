@@ -49,24 +49,14 @@ node {
             // -------------------------------------------------------------------------
  
             stage('Create Test Scratch Org') {
-                rc = command "sfdx force:org:create --targetdevhubusername ${SFDC_HOST} --setdefaultusername --definitionfile config/project-scratch-def.json --setalias testOG --wait 10 --durationdays 1"
+                rc = command "sfdx force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
                 if (rc != 0) {
-                    error 'Salesforce test scratch org creation failed.'
+                    error 'Salesforce deploy failed.'
                 }
             }
  
  
-            // -------------------------------------------------------------------------
-            // Display test scratch org info.
-            // -------------------------------------------------------------------------
- 
-            stage('Display Test Scratch Org') {
-                rc = command "sfdx force:org:display --targetusername testOG"
-                if (rc != 0) {
-                    error 'Salesforce test scratch org display failed.'
-                }
-            }
- 
+           
  
  
         }
