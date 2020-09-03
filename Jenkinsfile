@@ -48,8 +48,8 @@ node {
             // Create new scratch org to test your code.
             // -------------------------------------------------------------------------
  
-            stage('Create Test Scratch Org') {
-                rc = command "sfdx force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
+            stage('Deploy') {
+                rc = command "sfdx force:source:convert -d mdapi & sfdx force:mdapi:deploy -d mdapi-u ${HUB_ORG}"
                 if (rc != 0) {
                     error 'Salesforce deploy failed.'
                 }
