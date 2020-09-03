@@ -35,7 +35,7 @@ node {
 			println rc
 			// need to pull out assigned username
 			if (isUnix()) {
-				rmsg = sh returnStdout: true, script: "sfdx force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
+				rmsg = sh returnStdout: true, script: "sfdx force:auth:logout --targetusername --username -p & sfdx force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
 			}else{
 			   rmsg = bat returnStdout: true, script: "\"sfdx\" force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
 			}
