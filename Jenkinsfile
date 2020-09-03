@@ -23,27 +23,16 @@ node {
         checkout scm
     }
 
-    withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-        stage('Deploye Code') {
-            if (isUnix()) {
-                rc = sh returnStatus: true, script: "sfdx force:auth:logout --targetusername --username -p & sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-            }else{
-                 rc = bat returnStatus: true, script: "\"sfdx\" force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-            }
-            if (rc != 0) { error 'hub org authorization failed' }
-
-			println rc
-			// need to pull out assigned username
-			if (isUnix()) {
-				rmsg = sh returnStdout: true, script: "sfdx force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
-			}else{
-			   rmsg = bat returnStdout: true, script: "\"sfdx\" force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
-			}
-			  
-            printf rmsg
-            println('Hello from a Job DSL script!')
-            println(rmsg)
-			
-        }
-    }
+    withCredentials([file(credentialsId: 'SIT-SECRET-FILE', variable: 'jwt_key_file')]) {
+                    sh 'sfdx force:auth:logout --targetusername --username -p & sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}'
+                    sh "sfdx essentials:filter-metadatas -i ./src -o ./package -p ./src/package.xml"
+                    sh(returnStdout: false, script: '''
+                        if [ -d ./package/classes ] 
+                        then 
+                            sfdx force:mdapi:deploy -d ./package -u sit -l RunSpecifiedTests -w -1 -g -r \$(sh testclasses.sh ./package/classes)
+                        else 
+                            sfdx force:mdapi:deploy -d ./package -u sit -l NoTestRun -w -1 -g 
+                        fi
+                    '''.stripIndent())
+                }
 }
