@@ -44,6 +44,30 @@ node {
                 }
             }
  
+            // -------------------------------------------------------------------------
+            // Create new scratch org to test your code.
+            // -------------------------------------------------------------------------
+ 
+            stage('Create Test Scratch Org') {
+                rc = command "sfdx force:org:create --targetdevhubusername ${SFDC_HOST} --setdefaultusername --definitionfile config/project-scratch-def.json --setalias testOG --wait 10 --durationdays 1"
+                if (rc != 0) {
+                    error 'Salesforce test scratch org creation failed.'
+                }
+            }
+ 
+ 
+            // -------------------------------------------------------------------------
+            // Display test scratch org info.
+            // -------------------------------------------------------------------------
+ 
+            stage('Display Test Scratch Org') {
+                rc = command "sfdx force:org:display --targetusername testOG"
+                if (rc != 0) {
+                    error 'Salesforce test scratch org display failed.'
+                }
+            }
+ 
+ 
  
         }
     }
