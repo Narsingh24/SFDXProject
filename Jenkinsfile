@@ -48,8 +48,8 @@ node {
             // Create new scratch org to test your code.
             // -------------------------------------------------------------------------
  
-            stage('Deploy') {
-                rc = command "sfdx force:source:convert mdapi"
+            stage('Convert') {
+                rc = command "sfdx force:source:convert -d mdapi"
                 if (rc != 0) {
                     error 'Salesforce deploy failed.'
                 }
