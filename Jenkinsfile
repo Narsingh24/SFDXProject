@@ -51,11 +51,11 @@ node {
             stage('Convert') {
                 rc = command "sfdx force:source:convert -d mdapi"
                 if (rc != 0) {
-                    error 'Salesforce deploy failed.'
+                    error 'Salesforce convert failed.'
                 }
             }
             stage('Deploy') {
-                rc = command "sfdx force:source:convert -d mdapi"
+                rc = command "sfdx force:mdapi:deploy -d mdapi -u ${HUB_ORG}"
                 if (rc != 0) {
                     error 'Salesforce deploy failed.'
                 }
