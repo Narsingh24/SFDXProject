@@ -45,7 +45,7 @@ node {
             }
  
             // -------------------------------------------------------------------------
-            // Create new scratch org to test your code.
+            // Convert Meta-data.
             // -------------------------------------------------------------------------
  
             stage('Convert') {
@@ -54,7 +54,12 @@ node {
                     error 'Salesforce deploy failed.'
                 }
             }
- 
+            stage('Deploy') {
+                rc = command "sfdx force:source:convert -d mdapi"
+                if (rc != 0) {
+                    error 'Salesforce deploy failed.'
+                }
+            }
  
            
  
